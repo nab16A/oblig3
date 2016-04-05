@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns:H="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Redigering av profil</title>
+    <link href="style.css" rel="stylesheet">
+</head>
+<body>
+    <header id="header">
+        <h1>Endre students opplysninger</h1>
+
+        <div id="hoved">
+            <p id="s1">Studentinfo:</p>
+            <ol>
+                <li><?PHP echo '<span style="color:#6699FF;">Id:</span> '; if (isset($_GET['id'])) echo $_GET['id']; ?></li>
+                <li><?PHP echo '<span style="color:#6699FF;">Etternavn:</span> '; if (isset($_GET['etternavn'])) echo $_GET['etternavn']; ?></li>
+                <li><?PHP echo '<span style="color:#6699FF;">Fornavn:</span> '; if (isset($_GET['fornavn'])) echo $_GET['fornavn']; ?></li>
+                <li><?PHP echo '<span style="color:#6699FF;">klasse:</span> '; if (isset($_GET['klasse'])) echo $_GET['klasse']; ?></li>
+                <li><?PHP echo '<span style="color:#6699FF;">Mobil:</span> '; if (isset($_GET['mobil'])) echo $_GET['mobil']; ?></li>
+                <li><?PHP echo '<span style="color:#6699FF;">Nettside:</span> '; if (isset($_GET['www'])) echo $_GET['www']; ?></li>
+                <li><?PHP echo '<span style="color:#6699FF;">Epost adresse:</span> '; if(isset($_GET['epost'])) echo $_GET['epost']; ?></li>
+                <li><?PHP echo '<span style="color:#6699FF;">Dato opprettet:</span> '; if (isset($_GET['dato'])) echo $_GET['dato']; ?></li>
+            </ol>
+
+            <p id="s1">Endre opplysninger:</p>
+            <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="post">
+                <ul>
+                    <li><p style="margin-left: 5px">
+                            <label for="id">Id:</label>
+                            <input type="text" maxlength="5" style="background-color: #E6E6E6" name="id" id="Id" value="<?php if (isset($_GET['id'])) echo $_GET['id']; ?>" readonly>
+                        </p></li>
+                    <li><p style="margin-left: 5px">
+                        <label for="etterNavn">Etternavn:</label>
+                        <input type="text" maxlength="15" name="etternavn" id="etterNavn" value="<?php if (isset($_GET['etternavn'])) echo htmlentities($_GET['etternavn']); ?>">
+                    </p></li>
+                    <li><p style="margin-left: 5px">
+                        <label for="forNavn">Fornavn:</label>
+                        <input type="text" maxlength="30" name="fornavn" id="forNavn" value="<?php if (isset($_GET['fornavn'])) echo htmlentities($_GET['fornavn']); ?>">
+                    </p></li>
+                </ul>
+
+                <select style="margin-left: 30px" id="selected">
+                    <option selected id="selected">Nåværende klasser her</option>
+                    <?php for ($i = 0; $i < count($_GET['arr']); $i++) { ?>
+                    <option ><?php if (isset($_GET['arr'][$i])) echo $_GET['arr'][$i]; ?></option>
+                    <?php } ?>
+                </select>
+
+                <ul>
+                    <li><p style="margin-left: 5px">
+                            <label for="klasse">Klasse:</label>
+                            <input type="text" maxlength="20" name="klasse" id="studKlasse" value="<?php if (isset($_GET['klasse'])) echo htmlentities($_GET['klasse']); ?>">
+                    </p></li>
+                    <li><p style="margin-left: 5px">
+                            <label for="telfonNr">Tlfnr.:</label>
+                            <input type="text" maxlength="8" name="tlfnnr" id="telfonNr" value="<?php if (isset($_GET['mobil'])) echo htmlentities($_GET['mobil']); ?>">
+                    </p></li>
+                    <li><p style="margin-left: 5px">
+                            <label for="nettSide">Hjemmeside:</label>
+                            <input type="text" maxlength="50" name="nettside" id="nettSide" value="<?php if (isset($_GET['www'])) echo htmlentities($_GET['www']); ?>">
+                    </p></li>
+                    <li><p style="margin-left: 5px">
+                            <label for="epostAdresse">Epost adresse:</label>
+                            <input type="text" maxlength="40" name="epost" id="epostAdresse" value="<?php if (isset($_GET['epost'])) echo htmlentities($_GET['epost']); ?>">
+                    </p></li>
+                    <li><p style="margin-left: 5px">
+                            <label for="datooppretting">Opprettet:</label>
+                            <input type="text" maxlength="20" name="dato" id="datoOppretting" value="<?php if (isset($_GET['dato'])) echo htmlentities($_GET['dato']); ?>">
+                    </p></li>
+                </ul>
+
+                <input class ="btnSubmit" name="oppdater" type="submit" value="Oppdater">
+                <button class="btnClear" type="reset" value="Reset">Clear</button>
+            </form>
+
+            <?php
+            function __autoload($class_name)
+            {
+                require_once $class_name . '.class.php';
+            }
+            require_once 'myDBUsingPDO.php';
+            require_once ('student.class.php');
+
+            $studReg = new StudentRegister($db);
+                if (isset($_POST['oppdater'])) {
+                    $id = $_POST['id'];
+                    $etter_navn = htmlentities($_POST['etternavn']);
+                    $for_navn = htmlentities($_POST['fornavn']);
+                    $klasse = htmlentities($_POST['klasse']);
+                    $tlf_nr = htmlentities($_POST['tlfnnr']);
+                    $nett_side= htmlentities($_POST['nettside']);
+                    $epost_adresse= htmlentities($_POST['epost']);
+                    $dato_oppretting= htmlentities($_POST['dato']);
+
+                    if ($etter_navn == ''|| $for_navn == '' || $klasse == '' || $tlf_nr == '' || $epost_adresse == '') {
+                        echo '<br>';
+                        echo '&nbsp;'.'<span style="color:red;">Feltene etternavn, fornavn, klasse, telefon nummer og epost adresse må fylles ut først!</span>';
+                    } else if ($dato_oppretting == '') {
+                        $dato_oppretting = date("Y-m-d H:i:s");
+                        $oppdatStudent = new student();
+                        $oppdatStudent->setId($id);
+                        $oppdatStudent->setEtterNavn($etter_navn);
+                        $oppdatStudent->setForNavn($for_navn);
+                        $oppdatStudent->setKlasse($klasse);
+                        $oppdatStudent->setMobil($tlf_nr);
+                        $oppdatStudent->setNettSide($nett_side);
+                        $oppdatStudent->setEpost($epost_adresse);
+                        $oppdatStudent->setDatoOppretting($dato_oppretting);
+
+                        $update = $studReg->oppdaterInfoStudent($oppdatStudent);
+                        echo '<br>';
+                        echo '&nbsp;'.$update;
+                    } else {
+                        $oppdatStudent = new student();
+                        $oppdatStudent->setId($id);
+                        $oppdatStudent->setEtterNavn($etter_navn);
+                        $oppdatStudent->setForNavn($for_navn);
+                        $oppdatStudent->setKlasse($klasse);
+                        $oppdatStudent->setMobil($tlf_nr);
+                        $oppdatStudent->setNettSide($nett_side);
+                        $oppdatStudent->setEpost($epost_adresse);
+                        $oppdatStudent->setDatoOppretting($dato_oppretting);
+
+                        $update = $studReg->oppdaterInfoStudent($oppdatStudent);
+                        echo '<br>';
+                        echo '&nbsp;'.$update;
+                    }
+                }
+            ?>
+
+            <form action="tilbakeTilIndex.php" method="post">
+                <?php echo str_repeat('<br/>', 3) ?>
+                <input class="btnTilbake" type="submit" name="return" value="tilbake">
+            </form>
+
+        </div>
+
+    </header>
+    <footer class="footer">
+        <p>Copyright&copy;ITE-1805 [V16] oblig3-Nabil
+    </footer>
+</body>
+</html>
+

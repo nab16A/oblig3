@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Oblig3-Besvarelse</title>
+    <link href="style.css" rel="stylesheet">
+    <style>
+        li {
+           margin: 7px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <header id="header">
+        <h1>OBLIG 3 - BESVARELSE</h1>
+
+        <div id="hoved">
+            <p id="s1">Info om oblig3:</p>
+            <p style="margin-left: 20px">Finner du <a href="infoOblig3.html" target="_blank">her</a></p>
+            <p id="s2">Liste over alle registrerte studenter sortert på etternavn:</p>
+            <p style="margin-left: 20px">[Klikk på navnet for å endre personopplysninger]</p>
+            <?php
+                function __autoload($class_name)
+                {
+                    require_once $class_name . '.class.php';
+                }
+                require_once 'myDBUsingPDO.php';
+                require_once ('student.class.php');
+
+                $studReg = new StudentRegister($db);
+                $listStudenter = $studReg->visAlleStudenter();
+
+                echo '<ol>';
+                foreach ($listStudenter as $student)
+                {
+                    print '<li>'.("<a class='hov' href=" . $_SERVER['PHP_SELF']."?id=".htmlentities($student->hentId()).">".htmlentities($student->hentNavn())."</a><br/>\n");
+                }
+                echo '</ol>';
+                if (isset($_GET['id']) && is_numeric($_GET['id'])) {
+                    $id = intval($_GET['id']);
+                    if ($arrInfo = $studReg->visEnkelStudent($id)) {
+                        $listKlasse = $studReg->visKlasse();
+                        $vk = array($listKlasse[0]['navn'], $listKlasse[1]['navn'], $listKlasse[2]['navn']);
+                        header('Location: oppdaterStudent.phtml?id='.$arrInfo[0][0][0].'&etternavn='.$arrInfo[0][0]['etternavn'].'&fornavn='.$arrInfo[0][0]['fornavn'].'&klasse='.$arrInfo[0][0]['navn'].'&mobil='.$arrInfo[0][0]['mobil'].'&www='.$arrInfo[0][0]['www'].'&epost='.$arrInfo[0][0]['epost'].'&dato='.$arrInfo[0][0]['opprettet'].'&arr[]='.$vk[0].'&arr[]='.$vk[1].'&arr[]='.$vk[2]);
+                    } else {
+                        echo 'Finner ikke de nåværende klasser!';
+                    }
+                }
+            ?>
+            <p id="s1">Studenter sortert på etternavn:</p>
+
+             <form style="padding-left:10px" action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="POST">
+                <!--<span >Studenter i klasse:</span> -->
+                <select name="klasse" onchange="submit()">
+                    <option selected>velg klasse</option>
+                    <?php
+                        $listKlasse = $studReg->visKlasse();
+                        for ($i = 0; $i < count($listKlasse); $i++) { ?>
+                        <option value="<?php echo $listKlasse[$i]['navn']; ?>"><?php echo $listKlasse[$i]['navn']; ?></option>
+                          <?php } ?>
+                </select>
+                <noscript><input type="submit" value="Submit"></noscript>
+             </form>
+            <?php
+            echo '<br>';
+            if (isset($_POST['klasse']) ? $_POST['klasse'] : null)
+            {
+                $klasseValgt = $_POST['klasse'];
+                echo '&nbsp;'.'<span style="color:green;">Studenter i klasse</span> ' . $klasseValgt . ' <span style="color:green;">er:</span>';
+                if ($listKlassStudenter = $studReg->visStudenterTilValgtKlasse($klasseValgt)) {
+                    echo '<ol>';
+                    foreach ($listKlassStudenter as $listKlassStud)
+                    {
+                        echo '<li>'.htmlentities($listKlassStud->hentNavn()).PHP_EOL.'</li>';
+                    }
+                    echo '</ol>';
+                }
+                else {
+                    echo '&nbsp;'.'Finner ikke studenter du ba om!';
+                }
+            }
+            ?>
+            <p id="s1">Registrering av ny student:</p>
+            <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="post">
+                <ul>
+                    <li><p style="margin-left: 5px">
+                        <label for="etterNavn">Etternavn:</label>
+                        <input type="text" maxlength="15" name="etternavn" placeholder="Må fylles ut" id="etterNavn">
+                    </p></li>
+                    <li><p style="margin-left: 5px">
+                        <label for="forNavn">Fornavn:</label>
+                        <input type="text" maxlength="30" name="fornavn" placeholder="Må fylles ut" id="forNavn">
+                    </p></li>
+                </ul>
+                <ul>
+                    <li><label for="klasse" style="margin-left: 5px">Klasse:</label>
+                        <select name="minKlasse" id="klasse">
+                            <option selected>velg her</option>
+                            <?php for ($i = 0; $i < count($listKlasse); $i++) { ?>
+                            <option value="<?php echo $listKlasse[$i]['navn']; ?>"><?php echo $listKlasse[$i]['navn']; ?></option>
+                            <?php
+                            }
+                            ?>
+                        </select></li>
+                </ul>
+                <ul>
+                    <li><p style="margin-left: 5px">
+                        <label for="telfonNr">Tlfnr.:</label>
+                        <input type="text" maxlength="8" name="tlfnnr" placeholder="Må fylles ut" id="telfonNr">
+                    </p></li>
+                    <li><p style="margin-left: 5px">
+                            <label for="nettSide">Hjemmeside:</label>
+                            <input type="text" maxlength="50" name="nettside" id="nettSide">
+                    </p></li>
+                    <li><p style="margin-left: 5px">
+                        <label for="epostAdresse">Epost adresse:</label>
+                        <input type="text" maxlength="40" name="epost" placeholder="Må fylles ut" id="epostAdresse">
+                    </p></li>
+                    <li><p style="margin-left: 5px">
+                            <label for="datooppretting">Opprettet:</label>
+                            <input type="text" maxlength="20" name="dato" id="datoOppretting" placeholder="Y-m-d H:i:s">
+                    </p></li>
+                </ul>
+                <input class ="btnSubmit" name="send" type="submit" value="Send">
+                <button class="btnClear" type="reset" value="Reset">Clear</button>
+            </form>
+            <?php
+                if (isset($_POST['send'])) {
+                    $etter_navn = htmlentities($_POST['etternavn']);
+                    $for_navn = htmlentities($_POST['fornavn']);
+                    $klasse = htmlentities($_POST['minKlasse']);
+                    $tlf_nr = htmlentities($_POST['tlfnnr']);
+                    $nett_side= htmlentities($_POST['nettside']);
+                    $epost_adresse= htmlentities($_POST['epost']);
+                    $dato_oppretting= htmlentities($_POST['dato']);
+                    if ($etter_navn == ''|| $for_navn == '' || $klasse === 'velg her' || $tlf_nr == '' || $epost_adresse == '') {
+                        echo '<br>';
+                        echo '&nbsp;'.'<span style="color:red;">Feltene etternavn, fornavn, klasse, telefon nummer og epost adresse må fylles ut først!</span>';
+                    } else if ($dato_oppretting == '') {
+                        $dato_oppretting = date("Y-m-d H:i:s");
+                        $newStudent = new student();
+                        $newStudent->setEtterNavn($etter_navn);
+                        $newStudent->setForNavn($for_navn);
+                        $newStudent->setKlasse($klasse);
+                        $newStudent->setMobil($tlf_nr);
+                        $newStudent->setNettSide($nett_side);
+                        $newStudent->setEpost($epost_adresse);
+                        $newStudent->setDatoOppretting($dato_oppretting);
+
+                        $regNyStudent = $studReg->leggTilNyStudent($newStudent);
+                        if ($regNyStudent) {
+                            echo '<br>';
+                            echo '&nbsp;'.'<span style="color:green;">Ny student har blitt registrert med id = </span>' . $regNyStudent;
+                        } else {
+                            echo '&nbsp;'.'<span style="color:red;">Feil ved registrering av en ny student!</span>';
+                        }
+                    } else {
+                        $newStudent = new student();
+                        $newStudent->setEtterNavn($etter_navn);
+                        $newStudent->setForNavn($for_navn);
+                        $newStudent->setKlasse($klasse);
+                        $newStudent->setMobil($tlf_nr);
+                        $newStudent->setNettSide($nett_side);
+                        $newStudent->setEpost($epost_adresse);
+                        $newStudent->setDatoOppretting($dato_oppretting);
+
+                        $regNyStudent = $studReg->leggTilNyStudent($newStudent);
+                        if ($regNyStudent) {
+                            echo '<br>';
+                            echo '&nbsp;'.'<span style="color:green;">Ny student har blitt registrert med id = </span>' . $regNyStudent;
+                        } else {
+                            echo '&nbsp;'.'<span style="color:red;">Feil ved registrering av en ny student!</span>';
+                        }
+                    }
+                }
+            ?>
+        </div>
+    </header>
+
+    <footer class="footer">
+        <p>Copyright&copy;ITE-1805 [V16] oblig3-Nabil
+    </footer>
+</body>
+</html>

@@ -1,0 +1,78 @@
+body {
+    font-family: "Trebuchet MS", Verdana, sans-serif;
+    font-size: 16px;
+    color: #000;
+    padding: 0 0 0 310px;
+    max-width: 1000px;
+    background-image: url("http://www.unpezvivo.com/proyectos/themeforest/agora/serif/images/reel/background.jpg");
+    background-repeat: no-repeat;
+    background-size: 100% 200%;
+}
+
+#header {
+    background-color: #99c7ef;
+    border-radius: 5px 5px 5px 5px;
+}
+
+h1 {
+    color: #000;
+    border-bottom: 2px solid #000;
+    font-size: x-large;
+    font-family: 'Times New Roman' ,Georgia, Serif;
+    text-align: center;
+    padding: 5px;
+}
+
+#hoved {
+    padding: 10px;
+    padding-left:  15px;
+    padding-right: 15px;
+    background-color: #E4ECFE;
+    border-radius: 5px 5px 5px 5px;
+
+}
+
+a.hov {
+    font-size: 120%;
+}
+
+#s1 {
+    color: #6699FF;
+    font-size: 20px;
+    font-family: "Times New Roman", Georgia, Serif;
+    text-decoration: underline;
+}
+
+#s2 {
+    color: #6699FF;
+    font-size: 20px;
+    font-family: "Times New Roman", Georgia, Serif;
+    text-decoration: underline;
+}
+
+footer p {
+    font-size: 12px;
+    color: #ffffff;
+}
+
+#tidsfrist {
+    text-align: center;
+}
+
+.btnClear {
+    margin-left: 150px;
+}
+
+.btnSubmit {
+    margin-left: 25px;
+}
+
+.btnTilbake {
+    margin-left: 25px;
+}
+
+#selected {
+    background-color: #c3e4ef;
+}
+
+
